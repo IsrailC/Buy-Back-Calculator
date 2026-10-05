@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en-AU"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Buyback Deal Calculator</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#eef0f2;--panel:#fff;--ink:#16202b;--mute:#5d6b7a;--line:#d5dae0;--accent:#0f4c5c;--pos:#13693a;--neg:#b3261e;--posbg:#dff1e6;--negbg:#f8dfdc;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0f151b;--panel:#18212a;--ink:#e8edf2;--mute:#9aa8b6;--line:#2b3846;--accent:#6cc3d5;--pos:#6fd39a;--neg:#ff8f86;--posbg:#16382a;--negbg:#42211f}}
+:root[data-theme="dark"]{--bg:#0f151b;--panel:#18212a;--ink:#e8edf2;--mute:#9aa8b6;--line:#2b3846;--accent:#6cc3d5;--pos:#6fd39a;--neg:#ff8f86;--posbg:#16382a;--negbg:#42211f}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.45 Barlow,system-ui,sans-serif}
+header{padding:28px 20px 8px;max-width:1180px;margin:auto}
+h1{font:700 34px/1.05 "Barlow Condensed",Impact,sans-serif;margin:0 0 6px;letter-spacing:.2px}
+header p{margin:0;color:var(--mute);max-width:62ch}
+main{max-width:1180px;margin:auto;padding:12px 20px 40px;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px;align-items:stretch}main>section{margin:0}.sp{display:block}@media(max-width:860px){.sp{display:none}}
+@media(max-width:860px){main{grid-template-columns:1fr}}
+section,.res{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:16px 18px;margin-bottom:14px}
+h2{font:700 20px "Barlow Condensed",sans-serif;margin:0 0 10px;color:var(--accent)}
+.g{display:grid;grid-template-columns:1fr 1fr;gap:10px 12px}
+label{display:flex;flex-direction:column;font-size:13px;color:var(--mute);gap:3px}
+input{font:inherit;font-size:15px;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:7px 9px;width:100%;min-width:0}
+input:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+.chk{flex-direction:row;align-items:center;gap:8px;grid-column:1/-1}.chk input{width:auto}
+.hero{display:flex;flex-wrap:wrap;gap:6px 28px;align-items:flex-end;margin-bottom:6px}
+.big{font:700 56px/1 "Barlow Condensed",sans-serif}
+.pos{color:var(--pos)}.neg{color:var(--neg)}
+.kv{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin:14px 0}
+.kv div{border-left:3px solid var(--line);padding-left:9px;font-size:12.5px;color:var(--mute)}
+.kv b{display:block;font:600 20px "Barlow Condensed",sans-serif;color:var(--ink)}
+table{width:100%;border-collapse:collapse;font-size:14px}
+td,th{padding:6px 8px;text-align:right;border-bottom:1px solid var(--line)}
+td:first-child,th:first-child{text-align:left}
+th{font-weight:600;color:var(--mute);font-size:12.5px}
+tr.tot td{font-weight:600;border-top:2px solid var(--ink);border-bottom:0}
+.sc{overflow-x:auto}
+.sc td.p{background:var(--posbg);color:var(--pos)}.sc td.n{background:var(--negbg);color:var(--neg)}
+.sc td.base{outline:2px solid var(--ink);outline-offset:-2px;font-weight:600}
+tr.hl td{background:var(--bg);font-weight:700;font-size:15.5px;border-top:2px solid var(--accent);border-bottom:2px solid var(--accent)}
+h3{font:700 18px "Barlow Condensed",sans-serif;margin:18px 0 10px;padding-top:14px;border-top:1px solid var(--line);color:var(--accent)}
+.out{display:block;font:600 18px "Barlow Condensed",sans-serif;padding:7px 9px;border:1px solid var(--line);border-radius:6px;background:var(--bg)}
+small{color:var(--mute);display:block;margin-top:8px}
+</style></head><body>
+<header><h1>Buyback Deal Calculator</h1>
+<p>Profit per car when you sell vehicles to Fleet companies and buy them back at an agreed price after 6–12 months. All figures in AUD, ex GST.</p></header>
+<main>
+<section><h2>1. Sales to Karmo/Fleet company</h2><div class="g">
+<label>Number of vehicles<input id="qty" type="number" value="20" min="1"></label>
+<label>Sale price to Karmo/Fleet co.<input id="sale" type="number" value="26000"></label>
+<label>Dealer cost per car (Total vehicle cost including PD, Clean, Licence &amp; Rego)<input id="cost" type="number" value="28000"></label>
+<label>Additional OEM support received per car<input id="oem" type="number" value="1500"></label>
+<label>Total additional KPI achieved by doing the deal (eg. Month Target)<input id="kpi" type="number" value="65000"></label>
+</div></section>
+<section class="res"><h2>Gross: sales to Karmo/Fleet</h2><table id="s1"></table></section>
+<section><h2>2. Buyback and resale</h2><div class="g">
+<label>Agreed buyback price<input id="bb" type="number" value="24500"></label>
+<label>Assumed resale price<input id="resale" type="number" value="27000"></label>
+<label>Reconditioning after buyback<input id="recon" type="number" value="900"></label>
+<label>Selling costs, fixed per car<input id="sfix" type="number" value="900"></label>
+<label>Selling costs, % of resale<input id="spct" type="number" value="0" step="0.25"></label>
+</div>
+<h3>Demo Price comparison</h3><div class="g">
+<label>Demo price<input id="demo" type="number" value="26500"></label>
+<label>Variance (demo minus buyback)<output id="var" class="out"></output></label>
+</div></section>
+<section class="res"><h2>Gross: buyback and resale</h2><table id="s2"></table></section>
+<div class="sp"></div>
+<section class="res"><h2>Total gross: sections 1 and 2 combined</h2><table id="s3"></table></section>
+</main>
+<script>
+const $=id=>document.getElementById(id), v=id=>parseFloat($(id).value)||0;
+const f=n=>(n<0?'-':'')+'$'+Math.abs(Math.round(n)).toLocaleString('en-AU');
+const cls=n=>n>=0?'pos':'neg';
+const row=(l,n,t)=>`<tr${t==2?' class="hl"':t?' class="tot"':''}><td>${l}</td><td class="${cls(n)}">${f(n)}</td></tr>`;
+function render(){
+ const q=v('qty'),gap=v('sale')-v('cost'),oem=v('oem'),kpi=v('kpi');
+ const g1=gap+oem;
+ const sell=v('sfix')+v('resale')*v('spct')/100;
+ const g2=v('resale')-v('bb')-v('recon')-sell;
+ const tot=g1+g2,dv=v('demo')-v('bb');
+ $('var').textContent=f(dv);$('var').className='out '+cls(dv);
+ $('s1').innerHTML='<tr><th>Per car</th><th>Amount</th></tr>'+row('Buyback Gap (Margin on sale to Karmo/Fleet co.)',gap)+row('Additional OEM support received',oem)+row('Gross per car',g1,2)+row(`Whole deal (${q} cars)`,g1*q,1)+row('Total additional KPI achieved',kpi)+row('Whole deal + KPI',g1*q+kpi,1);
+ $('s2').innerHTML='<tr><th>Per car</th><th>Amount</th></tr>'+row('Assumed resale price',v('resale'))+row('Less: agreed buyback price',-v('bb'))+row('Less: reconditioning',-v('recon'))+row('Less: selling costs',-sell)+row('Gross per car',g2,2)+row(`Whole deal (${q} cars)`,g2*q,1);
+ $('s3').innerHTML='<tr><th></th><th>Amount</th></tr>'+row('Gross per car: sales to Karmo/Fleet (section 1)',g1)+row('Gross per car: buyback and resale (section 2)',g2)+row('Total gross per car',tot,2)+row(`Whole deal (${q} cars)`,tot*q,1)+row('Total additional KPI achieved',kpi)+row('Whole deal + KPI',tot*q+kpi,1);
+}
+document.querySelectorAll('input').forEach(i=>i.addEventListener('input',render));
+render();
+</script></body></html>
