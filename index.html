@@ -59,7 +59,7 @@ small{color:var(--mute);display:block;margin-top:8px}
 <label><span class="t">Additional OEM support received per car <span class="gst">(GST exclusive)</span></span><input id="oem" type="number" value="0"></label>
 <label><span class="t">Total additional KPI achieved by doing the deal (eg. Month Target) <span class="gst">(GST exclusive)</span></span><input id="kpi" type="number" value="65000"></label>
 </div></section>
-<section class="res"><h2>Gross: sales to Karmo/Fleet</h2><table id="s1"></table></section>
+<section class="res"><h2>Initial gross on sale</h2><table id="s1"></table></section>
 <section><h2>2. Buyback and resale</h2><div class="g">
 <label><span class="t">Agreed buyback price <span class="gst">(GST inclusive)</span></span><input id="bb" type="number" value="23500" readonly tabindex="-1"></label>
 <label><span class="t">Assumed resale price <span class="gst">(GST inclusive)</span></span><input id="resale" type="number" value="26000"></label>
@@ -68,12 +68,12 @@ small{color:var(--mute);display:block;margin-top:8px}
 <label><span class="t">Selling costs, % of resale</span><input id="spct" type="number" value="0" step="0.25"></label>
 </div>
 </section>
-<section class="res"><h2>Gross: buyback and resale</h2><table id="s2"></table></section>
+<section class="res"><h2>Potential gross on buyback</h2><table id="s2"></table></section>
 <section><h2>Demo Price comparison</h2><div class="g">
 <label><span class="t">Demo price <span class="gst">(GST inclusive)</span></span><input id="demo" type="number" value="28000"></label>
 <label><span class="t">Demo variance <span class="gst">(GST inclusive)</span><br>(demo price minus assumed resale price)</span><output id="var" class="out"></output></label>
 </div></section>
-<section class="res"><h2>Total gross: sections 1 and 2 combined</h2><table id="s3"></table></section>
+<section class="res"><h2>Total potential gross (section 1 and 2 combined)</h2><table id="s3"></table></section>
 </main>
 <script>
 const $=id=>document.getElementById(id), v=id=>parseFloat($(id).value)||0;
