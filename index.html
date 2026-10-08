@@ -79,18 +79,20 @@ small{color:var(--mute);display:block;margin-top:8px}
 const $=id=>document.getElementById(id), v=id=>parseFloat($(id).value)||0;
 const f=n=>(n<0?'-':'')+'$'+Math.abs(Math.round(n)).toLocaleString('en-AU');
 const cls=n=>n>=0?'pos':'neg';
+const GST=1.1;
 const row=(l,n,t)=>`<tr${t==2?' class="hl"':t?' class="tot"':''}><td>${l}</td><td class="${cls(n)}">${f(n)}</td></tr>`;
 function render(){
- $('bb').value=v('sale')-v('gap');
- const q=v('qty'),gap=v('sale')-v('cost'),oem=v('oem'),kpi=v('kpi');
+ $('bb').value=Math.round((v('sale')-v('gap')*GST)*100)/100;
+ const q=v('qty'),gap=(v('sale')-v('cost'))/GST,oem=v('oem'),kpi=v('kpi');
  const g1=gap+oem;
- const sell=v('sfix')+v('resale')*v('spct')/100;
- const g2=v('resale')-v('bb')-v('recon')-sell;
+ const resEx=v('resale')/GST,bbEx=v('bb')/GST;
+ const sell=v('sfix')+resEx*v('spct')/100;
+ const g2=resEx-bbEx-v('recon')-sell;
  const tot=g1+g2,dv=v('demo')-v('resale');
  $('var').textContent=f(dv);$('var').className='out '+cls(dv);
- $('s1').innerHTML='<tr><th>Per car</th><th>Amount</th></tr>'+row('Margin on sale to Karmo/Fleet co.',gap)+row('Additional OEM support received',oem)+row('Gross per car',g1,2)+row(`Whole deal (${q} cars)`,g1*q,1)+row('Total additional KPI achieved',kpi)+row('Whole deal + KPI',g1*q+kpi,1);
- $('s2').innerHTML='<tr><th>Per car</th><th>Amount</th></tr>'+row('Assumed resale price',v('resale'))+row('Less: agreed buyback price',-v('bb'))+row('Less: reconditioning',-v('recon'))+row('Less: selling costs',-sell)+row('Gross per car',g2,2)+row(`Whole deal (${q} cars)`,g2*q,1);
- $('s3').innerHTML='<tr><th></th><th>Amount</th></tr>'+row('Gross per car: sales to Karmo/Fleet (section 1)',g1)+row('Gross per car: buyback and resale (section 2)',g2)+row('Total gross per car',tot,2)+row(`Whole deal (${q} cars)`,tot*q,1)+row('Total additional KPI achieved',kpi)+row('Whole deal + KPI',tot*q+kpi,1);
+ $('s1').innerHTML='<tr><th>Per car</th><th>Amount (ex GST)</th></tr>'+row('Margin on sale to Karmo/Fleet co.',gap)+row('Additional OEM support received',oem)+row('Gross per car',g1,2)+row(`Whole deal (${q} cars)`,g1*q,1)+row('Total additional KPI achieved',kpi)+row('Whole deal + KPI',g1*q+kpi,1);
+ $('s2').innerHTML='<tr><th>Per car</th><th>Amount (ex GST)</th></tr>'+row('Assumed resale price (ex GST)',resEx)+row('Less: agreed buyback price (ex GST)',-bbEx)+row('Less: reconditioning',-v('recon'))+row('Less: selling costs',-sell)+row('Gross per car',g2,2)+row(`Whole deal (${q} cars)`,g2*q,1);
+ $('s3').innerHTML='<tr><th></th><th>Amount (ex GST)</th></tr>'+row('Gross per car: sales to Karmo/Fleet (section 1)',g1)+row('Gross per car: buyback and resale (section 2)',g2)+row('Total gross per car',tot,2)+row(`Whole deal (${q} cars)`,tot*q,1)+row('Total additional KPI achieved',kpi)+row('Whole deal + KPI',tot*q+kpi,1);
 }
 document.querySelectorAll('input').forEach(i=>i.addEventListener('input',render));
 render();
