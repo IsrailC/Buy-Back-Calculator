@@ -47,6 +47,9 @@ label input,label .out{margin-top:auto;height:38px}
 .gst{white-space:nowrap}
 label .t{display:block}
 .btns{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px}
+.meta{display:flex;flex-wrap:wrap;gap:12px;margin-top:14px;max-width:940px}
+.meta label{flex:1 1 240px;color:var(--ink);font-weight:700;font-size:14px}
+.meta input{background:#fff;color:#16202b;font-weight:400;border-color:var(--accent)}
 .pdfbtn.alt{background:transparent;color:var(--accent);border:1.5px solid var(--accent)}
 .pdfbtn:disabled{opacity:.6;cursor:wait}
 .cap{position:fixed;left:-10000px;top:0;width:1100px;background:#eef0f2;--bg:#eef0f2;--panel:#fff;--ink:#16202b;--mute:#5d6b7a;--line:#d5dae0;--accent:#0f4c5c;--pos:#13693a;--neg:#b3261e;color:var(--ink)}
@@ -74,6 +77,7 @@ small{color:var(--mute);display:block;margin-top:8px}
 </style></head><body>
 <header><h1>Buyback Deal Calculator</h1>
 <p>Profit per car when you sell vehicles to Fleet companies and buy them back at an agreed price after 6–12 months.</p>
+<div class="meta"><label><span class="t">Dealership:</span><input id="dealer" type="text" placeholder="Enter dealership name"></label><label><span class="t">Prepared By:</span><input id="prepby" type="text" placeholder="Enter your name"></label><label><span class="t">Fleet Company:</span><input id="fleetco" type="text" placeholder="Enter the Fleet Company"></label></div>
 <div class="btns"><button id="sharebtn" class="pdfbtn sharebtn" onclick="sharePdf()" style="display:none">Share (Mobile)</button> <button class="pdfbtn alt" onclick="window.print()">Save as PDF / Print</button></div><div class="pdate"></div></header>
 <main>
 <section><h2>1. Sales to Karmo/Fleet company</h2><div class="g">
