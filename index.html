@@ -46,10 +46,35 @@ label input,label .out{margin-top:auto;height:38px}
 .out{display:flex!important;align-items:center}
 .gst{white-space:nowrap}
 label .t{display:block}
+.btns{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px}
+.pdfbtn.alt{background:transparent;color:var(--accent);border:1.5px solid var(--accent)}
+.pdfbtn:disabled{opacity:.6;cursor:wait}
+.cap{position:fixed;left:-10000px;top:0;width:1100px;background:#eef0f2;--bg:#eef0f2;--panel:#fff;--ink:#16202b;--mute:#5d6b7a;--line:#d5dae0;--accent:#0f4c5c;--pos:#13693a;--neg:#b3261e;color:var(--ink)}
+.cap main{grid-template-columns:1fr 1fr!important}
+.pdfbtn{margin-top:0;font:600 14px Barlow,system-ui,sans-serif;color:#fff;background:var(--accent);border:0;border-radius:8px;padding:10px 16px;cursor:pointer}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .pdfbtn:not(.alt){color:#0f151b}}
+.pdate{display:none}
+@media print{
+@page{size:A4 landscape;margin:8mm}
+:root:root:root{--bg:#eef0f2;--panel:#fff;--ink:#16202b;--mute:#5d6b7a;--line:#d5dae0;--accent:#0f4c5c;--pos:#13693a;--neg:#b3261e}
+*{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+body{font-size:11px;zoom:.8;background:#fff}
+.btns{display:none}
+.pdate{display:block;color:var(--mute);font-size:11px;margin-top:4px}
+header{padding:0 0 6px}h1{font-size:26px}
+main{grid-template-columns:1fr 1fr!important;gap:10px;padding:6px 0 0}
+section,.res{padding:10px 12px;break-inside:avoid}
+h2{font-size:16px;margin-bottom:6px}
+input{font-size:12px;padding:5px 7px;height:30px!important}
+label{font-size:10px}
+td,th{padding:4px 6px}
+table{font-size:11px}
+}
 small{color:var(--mute);display:block;margin-top:8px}
 </style></head><body>
 <header><h1>Buyback Deal Calculator</h1>
-<p>Profit per car when you sell vehicles to Fleet companies and buy them back at an agreed price after 6–12 months.</p></header>
+<p>Profit per car when you sell vehicles to Fleet companies and buy them back at an agreed price after 6–12 months.</p>
+<div class="btns"><button id="sharebtn" class="pdfbtn sharebtn" onclick="sharePdf()" style="display:none">Share (Mobile)</button> <button class="pdfbtn alt" onclick="window.print()">Save as PDF / Print</button></div><div class="pdate"></div></header>
 <main>
 <section><h2>1. Sales to Karmo/Fleet company</h2><div class="g">
 <label><span class="t">Number of vehicles</span><input id="qty" type="number" value="20" min="1"></label>
@@ -96,4 +121,29 @@ function render(){
 }
 document.querySelectorAll('input').forEach(i=>i.addEventListener('input',render));
 render();
+document.querySelector('.pdate').textContent='Prepared '+new Date().toLocaleDateString('en-AU',{day:'numeric',month:'long',year:'numeric'});
+const loadJs=(u,g)=>window[g]?Promise.resolve():new Promise((ok,no)=>{const e=document.createElement('script');e.src=u;e.onload=ok;e.onerror=no;document.head.appendChild(e)});
+async function sharePdf(){
+ const btn=$('sharebtn'),old=btn.textContent;btn.disabled=true;btn.textContent='Preparing PDF…';
+ try{
+  await loadJs('https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js','html2canvas');
+  await loadJs('https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js','jspdf');
+  const src=[...document.querySelectorAll('input')],wrap=document.createElement('div');wrap.className='cap';
+  wrap.appendChild(document.querySelector('header').cloneNode(true));wrap.appendChild(document.querySelector('main').cloneNode(true));
+  wrap.querySelectorAll('.btns').forEach(e=>e.remove());
+  wrap.querySelectorAll('input').forEach((i,k)=>i.setAttribute('value',src[k].value));
+  wrap.querySelector('.pdate').style.display='block';
+  document.body.appendChild(wrap);
+  const canvas=await html2canvas(wrap,{scale:2,backgroundColor:'#eef0f2',windowWidth:1100});
+  wrap.remove();
+  const pdf=new window.jspdf.jsPDF({orientation:'landscape',unit:'mm',format:'a4'}),W=297,H=210,m=8;
+  let w=W-2*m,h=w*canvas.height/canvas.width;if(h>H-2*m){h=H-2*m;w=h*canvas.width/canvas.height}
+  pdf.addImage(canvas.toDataURL('image/jpeg',0.95),'JPEG',(W-w)/2,m,w,h);
+  const file=new File([pdf.output('blob')],'Buyback Deal Calculator.pdf',{type:'application/pdf'});
+  if(navigator.canShare&&navigator.canShare({files:[file]}))await navigator.share({files:[file],title:'Buyback Deal Calculator'});
+  else pdf.save('Buyback Deal Calculator.pdf');
+ }catch(e){if(e.name!=='AbortError')alert('Could not create the PDF. Please use Save as PDF / Print instead.')}
+ finally{btn.disabled=false;btn.textContent=old}
+}
+if(navigator.share)$('sharebtn').style.display='';
 </script></body></html>
