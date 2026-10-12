@@ -61,7 +61,7 @@ label .t{display:block}
 @page{size:A4 landscape;margin:8mm}
 :root:root:root{--bg:#eef0f2;--panel:#fff;--ink:#16202b;--mute:#5d6b7a;--line:#d5dae0;--accent:#0f4c5c;--pos:#13693a;--neg:#b3261e}
 *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
-body{font-size:11px;zoom:.8;background:#fff}
+body{font-size:11px;zoom:.72;background:#fff}
 .btns{display:none}
 .pdate{display:block;color:var(--mute);font-size:11px;margin-top:4px}
 header{padding:0 0 6px}h1{font-size:26px}
@@ -119,9 +119,9 @@ function render(){
  const g2=resEx-bbEx-v('recon')-sell;
  const tot=g1+g2,dv=v('demo')-v('resale');
  $('var').textContent=f(dv);$('var').className='out '+cls(dv);
- $('s1').innerHTML='<tr><th>Per car</th><th>Amount (ex GST)</th></tr>'+row('Margin on sale to Karmo/Fleet co.',gap)+row('Additional OEM support received',oem)+row('Gross per car',g1,2)+row(`Whole deal (${q} cars)`,g1*q,1)+row('Total additional KPI achieved',kpi)+row('Whole deal + KPI',g1*q+kpi,1);
+ $('s1').innerHTML='<tr><th>Per car</th><th>Amount (ex GST)</th></tr>'+row('Margin on sale to Karmo/Fleet co.',gap)+row('Additional OEM support received',oem)+row('Gross per car',g1,2)+row(`Whole deal (${q} cars)`,g1*q,1)+row('Total additional KPI achieved',kpi)+row('Whole deal + KPI achieved',g1*q+kpi,1)+row('Whole deal + KPI not achieved',g1*q);
  $('s2').innerHTML='<tr><th>Per car</th><th>Amount (ex GST)</th></tr>'+row('Assumed resale price (ex GST)',resEx)+row('Less: agreed buyback price (ex GST)',-bbEx)+row('Less: reconditioning',-v('recon'))+row('Less: selling costs',-sell)+row('Gross per car',g2,2)+row(`Whole deal (${q} cars)`,g2*q,1);
- $('s3').innerHTML='<tr><th></th><th>Amount (ex GST)</th></tr>'+row('Gross per car: sales to Karmo/Fleet (section 1)',g1)+row('Gross per car: buyback and resale (section 2)',g2)+row('Total gross per car',tot,2)+row(`Whole deal (${q} cars)`,tot*q,1)+row('Total additional KPI achieved',kpi)+row('Whole deal + KPI',tot*q+kpi,1);
+ $('s3').innerHTML='<tr><th></th><th>Amount (ex GST)</th></tr>'+row('Gross per car: sales to Karmo/Fleet (section 1)',g1)+row('Gross per car: buyback and resale (section 2)',g2)+row('Total gross per car',tot,2)+row(`Whole deal (${q} cars)`,tot*q,1)+row('Total additional KPI achieved',kpi)+row('Whole deal + KPI achieved',tot*q+kpi,1)+row('Whole deal + KPI achieved (per car)',q?(tot*q+kpi)/q:0);
 }
 document.querySelectorAll('input').forEach(i=>i.addEventListener('input',render));
 render();
