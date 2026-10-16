@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en-AU"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Buyback Deal Calculator</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#eef0f2;--panel:#fff;--ink:#16202b;--mute:#5d6b7a;--line:#d5dae0;--accent:#0f4c5c;--pos:#13693a;--neg:#b3261e;--posbg:#dff1e6;--negbg:#f8dfdc;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0f151b;--panel:#18212a;--ink:#e8edf2;--mute:#9aa8b6;--line:#2b3846;--accent:#6cc3d5;--pos:#6fd39a;--neg:#ff8f86;--posbg:#16382a;--negbg:#42211f}}
+:root[data-theme="dark"]{--bg:#0f151b;--panel:#18212a;--ink:#e8edf2;--mute:#9aa8b6;--line:#2b3846;--accent:#6cc3d5;--pos:#6fd39a;--neg:#ff8f86;--posbg:#16382a;--negbg:#42211f}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.45 Barlow,system-ui,sans-serif}
+header{padding:28px 20px 8px;max-width:1180px;margin:auto}
+h1{font:700 34px/1.05 "Barlow Condensed",Impact,sans-serif;margin:0 0 6px;letter-spacing:.2px}
+header p{margin:0;color:var(--mute);max-width:62ch}
+main{max-width:1180px;margin:auto;padding:12px 20px 40px;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px;align-items:stretch}main>section,main>section.res{margin:0}.sp{display:block}@media(max-width:860px){.sp{display:none}}
+@media(max-width:860px){main{grid-template-columns:1fr}main>section:not(.res){order:1}main>section.res{order:2}}
+section,.res{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:16px 18px;margin-bottom:14px}
+h2{font:700 20px "Barlow Condensed",sans-serif;margin:0 0 10px;color:var(--accent)}
+.g{display:grid;grid-template-columns:1fr 1fr;gap:10px 12px}
+label{display:flex;flex-direction:column;font-size:12px;color:var(--mute);gap:3px}
+input{font:inherit;font-size:15px;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:7px 9px;width:100%;min-width:0}
+input:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+.chk{flex-direction:row;align-items:center;gap:8px;grid-column:1/-1}.chk input{width:auto}
+.hero{display:flex;flex-wrap:wrap;gap:6px 28px;align-items:flex-end;margin-bottom:6px}
+.big{font:700 56px/1 "Barlow Condensed",sans-serif}
+.pos{color:var(--pos)}.neg{color:var(--neg)}
+.kv{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin:14px 0}
+.kv div{border-left:3px solid var(--line);padding-left:9px;font-size:12.5px;color:var(--mute)}
+.kv b{display:block;font:600 20px "Barlow Condensed",sans-serif;color:var(--ink)}
+table{width:100%;border-collapse:collapse;font-size:14px}
+td,th{padding:6px 8px;text-align:right;border-bottom:1px solid var(--line)}
+td:first-child,th:first-child{text-align:left}
+th{font-weight:600;color:var(--mute);font-size:12.5px}
+tr.tot td{font-weight:600;border-top:2px solid var(--ink);border-bottom:0}
+.sc{overflow-x:auto}
+.sc td.p{background:var(--posbg);color:var(--pos)}.sc td.n{background:var(--negbg);color:var(--neg)}
+.sc td.base{outline:2px solid var(--ink);outline-offset:-2px;font-weight:600}
+tr.hl td{background:var(--bg);font-weight:700;font-size:15.5px;border-top:2px solid var(--accent);border-bottom:2px solid var(--accent)}
+h3{font:700 18px "Barlow Condensed",sans-serif;margin:18px 0 10px;padding-top:14px;border-top:1px solid var(--line);color:var(--accent)}
+.out{display:block;font:600 18px "Barlow Condensed",sans-serif;padding:7px 9px;border:1px solid var(--line);border-radius:6px;background:var(--bg)}
+input[readonly]{background:var(--line);cursor:not-allowed;font-weight:600}
+label{justify-content:space-between}
+label input,label .out{margin-top:auto;height:38px}
+.out{display:flex!important;align-items:center}
+.gst{white-space:nowrap}
+label .t{display:block}
+.btns{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px}
+.meta{display:flex;flex-wrap:wrap;gap:12px;margin-top:14px;max-width:940px}
+.meta label{flex:1 1 240px;color:var(--ink);font-weight:700;font-size:14px}
+.meta input{background:#fff;color:#16202b;font-weight:400;border-color:var(--accent)}
+.pdfbtn.alt{background:transparent;color:var(--accent);border:1.5px solid var(--accent)}
+.pdfbtn:disabled{opacity:.6;cursor:wait}
+.cap{position:fixed;left:-10000px;top:0;width:1100px;background:#eef0f2;--bg:#eef0f2;--panel:#fff;--ink:#16202b;--mute:#5d6b7a;--line:#d5dae0;--accent:#0f4c5c;--pos:#13693a;--neg:#b3261e;color:var(--ink)}
+.cap main{grid-template-columns:1fr 1fr!important}
+.cap main>section{order:0!important}
+.pdfbtn{margin-top:0;font:600 14px Barlow,system-ui,sans-serif;color:#fff;background:var(--accent);border:0;border-radius:8px;padding:10px 16px;cursor:pointer}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .pdfbtn:not(.alt){color:#0f151b}}
+.pdate{display:none}
+@media print{
+@page{size:A4 landscape;margin:8mm}
+:root:root:root{--bg:#eef0f2;--panel:#fff;--ink:#16202b;--mute:#5d6b7a;--line:#d5dae0;--accent:#0f4c5c;--pos:#13693a;--neg:#b3261e}
+*{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+body{font-size:11px;zoom:.72;background:#fff}
+.btns{display:none}
+.pdate{display:block;color:var(--mute);font-size:11px;margin-top:4px}
+header{padding:0 0 6px}h1{font-size:26px}
+main{grid-template-columns:1fr 1fr!important;gap:10px;padding:6px 0 0}
+main>section{order:0!important}
+section,.res{padding:10px 12px;break-inside:avoid}
+h2{font-size:16px;margin-bottom:6px}
+input{font-size:12px;padding:5px 7px;height:30px!important}
+label{font-size:10px}
+td,th{padding:4px 6px}
+table{font-size:11px}
+}
+small{color:var(--mute);display:block;margin-top:8px}
+</style></head><body>
+<header><h1>Buyback Deal Calculator</h1>
+<p>Profit per car when you sell vehicles to Fleet companies and buy them back at an agreed price after 6–12 months.</p>
+<div class="meta"><label><span class="t">Dealership:</span><input id="dealer" type="text" placeholder="Enter dealership name"></label><label><span class="t">Prepared By:</span><input id="prepby" type="text" placeholder="Enter your name"></label><label><span class="t">Fleet Company:</span><input id="fleetco" type="text" placeholder="Enter the Fleet Company"></label></div>
+<div class="btns"><button id="sharebtn" class="pdfbtn sharebtn" onclick="sharePdf()" style="display:none">Share (Mobile)</button> <button class="pdfbtn alt" onclick="window.print()">Save as PDF / Print</button></div><div class="pdate"></div></header>
+<main>
+<section><h2>1. Sales to Karmo/Fleet company</h2><div class="g">
+<label><span class="t">Number of vehicles</span><input id="qty" type="number" value="20" min="1"></label>
+<label><span class="t">Sale price to Karmo/Fleet co.<br>(driveaway - include onroads if required)<br><span class="gst">(GST inclusive)</span></span><input id="sale" type="number" value="27000"></label>
+<label><span class="t">Dealer cost per car (Total vehicle cost including PD, Clean, Licence &amp; Rego) <span class="gst">(GST inclusive)</span></span><input id="cost" type="number" value="28000"></label>
+<label><span class="t">Buyback Gap <span class="gst">(GST exclusive)</span><br>Will need to be greater if sale price includes onroads</span><input id="gap" type="number" value="3500"></label>
+<label><span class="t">Additional OEM support received per car <span class="gst">(GST exclusive)</span></span><input id="oem" type="number" value="0"></label>
+<label><span class="t">Total additional KPI achieved by doing the deal (eg. Month Target) <span class="gst">(GST exclusive)</span></span><input id="kpi" type="number" value="65000"></label>
+</div></section>
+<section class="res"><h2>Initial gross on sale</h2><table id="s1"></table></section>
+<section><h2>2. Buyback and resale</h2><div class="g">
+<label><span class="t">Agreed buyback price <span class="gst">(GST inclusive)</span></span><input id="bb" type="number" value="23500" readonly tabindex="-1"></label>
+<label><span class="t">Assumed resale price <span class="gst">(GST inclusive)</span><br>(excl onroads)</span><input id="resale" type="number" value="26000"></label>
+<label><span class="t">Reconditioning after buyback <span class="gst">(GST exclusive)</span></span><input id="recon" type="number" value="900"></label>
+<label><span class="t">Selling costs, fixed per car <span class="gst">(GST exclusive)</span></span><input id="sfix" type="number" value="900"></label>
+</div>
+</section>
+<section class="res"><h2>Potential gross on buyback <span class="gst">(excl KPI achieved)</span></h2><table id="s2"></table></section>
+<section><h2>Demo Price comparison</h2><div class="g">
+<label><span class="t">Demo price <span class="gst">(GST inclusive)</span></span><input id="demo" type="number" value="28000"></label>
+<label><span class="t">Demo variance <span class="gst">(GST inclusive)</span><br>(demo price minus assumed resale price)</span><output id="var" class="out"></output></label>
+</div></section>
+<section class="res"><h2>Total potential gross <span class="gst">(section 1 and 2 combined)</span></h2><table id="s3"></table></section>
+</main>
+<script>
+const $=id=>document.getElementById(id), v=id=>parseFloat($(id).value)||0;
+const f=n=>(n<0?'-':'')+'$'+Math.abs(Math.round(n)).toLocaleString('en-AU');
+const cls=n=>n>=0?'pos':'neg';
+const GST=1.1;
+const row=(l,n,t)=>`<tr${t==2?' class="hl"':t?' class="tot"':''}><td>${l}</td><td class="${cls(n)}">${f(n)}</td></tr>`;
+function render(){
+ $('bb').value=Math.round((v('sale')-v('gap')*GST)*100)/100;
+ const q=v('qty'),gap=(v('sale')-v('cost'))/GST,oem=v('oem'),kpi=v('kpi');
+ const g1=gap+oem;
+ const resEx=v('resale')/GST,bbEx=v('bb')/GST;
+ const sell=v('sfix');
+ const g2=resEx-bbEx-v('recon')-sell;
+ const tot=g1+g2,dv=v('demo')-v('resale');
+ $('var').textContent=f(dv);$('var').className='out '+cls(dv);
+ $('s1').innerHTML='<tr><th>Per car</th><th>Amount (ex GST)</th></tr>'+row('Margin on sale to Karmo/Fleet co.',gap)+row('Additional OEM support received',oem)+row('Gross per car',g1,2)+row(`Whole deal (${q} cars)`,g1*q,1)+row('Total additional KPI achieved',kpi)+row('Whole deal + KPI achieved',g1*q+kpi,1)+row('Whole deal + KPI not achieved',g1*q);
+ $('s2').innerHTML='<tr><th>Per car</th><th>Amount (ex GST)</th></tr>'+row('Assumed resale price (ex GST)',resEx)+row('Less: agreed buyback price (ex GST)',-bbEx)+row('Less: reconditioning',-v('recon'))+row('Less: selling costs',-sell)+row('Gross per car',g2,2)+row(`Whole deal (${q} cars)`,g2*q,1);
+ $('s3').innerHTML='<tr><th></th><th>Amount (ex GST)</th></tr>'+row('Gross per car: sales to Karmo/Fleet (section 1)',g1)+row('Gross per car: buyback and resale (section 2)',g2)+row('Total gross per car',tot,2)+row(`Whole deal (${q} cars)`,tot*q,1)+row('Total additional KPI achieved',kpi)+row('Whole deal + KPI achieved',tot*q+kpi,1)+row('Whole deal + KPI achieved (per car)',q?(tot*q+kpi)/q:0);
+}
+document.querySelectorAll('input').forEach(i=>i.addEventListener('input',render));
+render();
+document.querySelector('.pdate').textContent='Prepared '+new Date().toLocaleDateString('en-AU',{day:'numeric',month:'long',year:'numeric'});
+const loadJs=(u,g)=>window[g]?Promise.resolve():new Promise((ok,no)=>{const e=document.createElement('script');e.src=u;e.onload=ok;e.onerror=no;document.head.appendChild(e)});
+async function sharePdf(){
+ const btn=$('sharebtn'),old=btn.textContent;btn.disabled=true;btn.textContent='Preparing PDF…';
+ try{
+  await loadJs('https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js','html2canvas');
+  await loadJs('https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js','jspdf');
+  const src=[...document.querySelectorAll('input')],wrap=document.createElement('div');wrap.className='cap';
+  wrap.appendChild(document.querySelector('header').cloneNode(true));wrap.appendChild(document.querySelector('main').cloneNode(true));
+  wrap.querySelectorAll('.btns').forEach(e=>e.remove());
+  wrap.querySelectorAll('input').forEach((i,k)=>i.setAttribute('value',src[k].value));
+  wrap.querySelector('.pdate').style.display='block';
+  document.body.appendChild(wrap);
+  const canvas=await html2canvas(wrap,{scale:2,backgroundColor:'#eef0f2',windowWidth:1100});
+  wrap.remove();
+  const pdf=new window.jspdf.jsPDF({orientation:'landscape',unit:'mm',format:'a4'}),W=297,H=210,m=8;
+  let w=W-2*m,h=w*canvas.height/canvas.width;if(h>H-2*m){h=H-2*m;w=h*canvas.width/canvas.height}
+  pdf.addImage(canvas.toDataURL('image/jpeg',0.95),'JPEG',(W-w)/2,m,w,h);
+  const file=new File([pdf.output('blob')],'Buyback Deal Calculator.pdf',{type:'application/pdf'});
+  if(navigator.canShare&&navigator.canShare({files:[file]}))await navigator.share({files:[file],title:'Buyback Deal Calculator'});
+  else pdf.save('Buyback Deal Calculator.pdf');
+ }catch(e){if(e.name!=='AbortError')alert('Could not create the PDF. Please use Save as PDF / Print instead.')}
+ finally{btn.disabled=false;btn.textContent=old}
+}
+if(navigator.share)$('sharebtn').style.display='';
+</script></body></html>
