@@ -46,6 +46,7 @@ label{justify-content:space-between}
 label input,label .out{margin-top:auto;height:38px}
 .out{display:flex!important;align-items:center}
 .gst{white-space:nowrap}
+label .t strong{color:var(--ink);font-weight:700}
 label .t{display:block}
 .btns{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px}
 .meta{display:flex;flex-wrap:wrap;gap:12px;margin-top:14px;max-width:940px}
@@ -85,9 +86,9 @@ small{color:var(--mute);display:block;margin-top:8px}
 <main>
 <section><h2>1. Sales to Karmo/Fleet company</h2><div class="g">
 <label><span class="t">Number of vehicles</span><input id="qty" type="number" value="20" min="1"></label>
-<label><span class="t">Sale price to Karmo/Fleet co.<br>(driveaway - include onroads if required)<br><span class="gst">(GST inclusive)</span></span><input id="sale" type="number" value="27000"></label>
 <label><span class="t">Dealer cost per car (Total vehicle cost including PD, Clean, Licence &amp; Rego) <span class="gst">(GST inclusive)</span></span><input id="cost" type="number" value="28000"></label>
-<label><span class="t">Buyback Gap <span class="gst">(GST exclusive)</span><br>Will need to be greater if sale price includes onroads</span><input id="gap" type="number" value="3500"></label>
+<label><span class="t"><strong>Sale price to Karmo/Fleet co.</strong><br>(driveaway - include onroads if required)<br>(To equal cost price or less unless otherwise approved) <span class="gst">(GST inclusive)</span></span><input id="sale" type="number" value="27000"></label>
+<label><span class="t">Buyback Gap <span class="gst">(GST inclusive)</span></span><input id="gap" type="number" value="3500"></label>
 <label><span class="t">Additional OEM support received per car <span class="gst">(GST exclusive)</span></span><input id="oem" type="number" value="0"></label>
 <label><span class="t">Total additional KPI achieved by doing the deal (eg. Month Target) <span class="gst">(GST exclusive)</span></span><input id="kpi" type="number" value="65000"></label>
 </div></section>
@@ -113,7 +114,7 @@ const cls=n=>n>=0?'pos':'neg';
 const GST=1.1;
 const row=(l,n,t)=>`<tr${t==2?' class="hl"':t?' class="tot"':''}><td>${l}</td><td class="${cls(n)}">${f(n)}</td></tr>`;
 function render(){
- $('bb').value=Math.round((v('sale')-v('gap')*GST)*100)/100;
+ $('bb').value=Math.round((v('sale')-v('gap'))*100)/100;
  const q=v('qty'),gap=(v('sale')-v('cost'))/GST,oem=v('oem'),kpi=v('kpi');
  const g1=gap+oem;
  const resEx=v('resale')/GST,bbEx=v('bb')/GST;
