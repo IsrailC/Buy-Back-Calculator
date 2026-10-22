@@ -46,8 +46,11 @@ label{justify-content:space-between}
 label input,label .out{margin-top:auto;height:38px}
 .out{display:flex!important;align-items:center}
 .gst{white-space:nowrap}
+.kp{display:inline-block}
 label .t strong{color:var(--ink);font-weight:700}
 label .t{display:block}
+.gh{grid-column:1/-1;font-size:12px;font-weight:700;color:var(--ink);margin-top:6px}
+td+td{white-space:nowrap}
 .btns{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px}
 .meta{display:flex;flex-wrap:wrap;gap:12px;margin-top:14px;max-width:940px}
 .meta label{flex:1 1 240px;color:var(--ink);font-weight:700;font-size:14px}
@@ -95,7 +98,10 @@ small{color:var(--mute);display:block;margin-top:8px}
 <section class="res"><h2>Initial gross on sale</h2><table id="s1"></table></section>
 <section><h2>2. Buyback and resale</h2><div class="g">
 <label><span class="t">Agreed buyback price <span class="gst">(GST inclusive)</span></span><input id="bb" type="number" value="23500" readonly tabindex="-1"></label>
-<label><span class="t">Assumed resale price <span class="gst">(GST inclusive)</span><br>(excl onroads)</span><input id="resale" type="number" value="26000"></label>
+<div></div>
+<div class="gh">Assumed resale price <span class="gst">(GST inclusive)</span> <span class="gst">(excl onroads)</span></div>
+<label><span class="t">Best case</span><input id="resB" type="number" value="26000"></label>
+<label><span class="t">Worst case</span><input id="resW" type="number" value="24000"></label>
 <label><span class="t">Reconditioning after buyback <span class="gst">(GST exclusive)</span></span><input id="recon" type="number" value="900"></label>
 <label><span class="t">Selling costs, fixed per car <span class="gst">(GST exclusive)</span></span><input id="sfix" type="number" value="900"></label>
 </div>
@@ -103,7 +109,9 @@ small{color:var(--mute);display:block;margin-top:8px}
 <section class="res"><h2>Potential gross on buyback <span class="gst">(excl KPI achieved)</span></h2><table id="s2"></table></section>
 <section><h2>Demo Price comparison</h2><div class="g">
 <label><span class="t">Demo price <span class="gst">(GST inclusive)</span></span><input id="demo" type="number" value="28000"></label>
-<label><span class="t">Demo variance <span class="gst">(GST inclusive)</span><br>(demo price minus assumed resale price)</span><output id="var" class="out"></output></label>
+<div></div>
+<label><span class="t">Demo variance - best case <span class="gst">(GST inclusive)</span><br>(demo price minus best case resale price)</span><output id="var" class="out"></output></label>
+<label><span class="t">Demo variance - worst case <span class="gst">(GST inclusive)</span><br>(demo price minus worst case resale price)</span><output id="var2" class="out"></output></label>
 </div></section>
 <section class="res"><h2>Total potential gross <span class="gst">(section 1 and 2 combined)</span></h2><table id="s3"></table></section>
 </main>
@@ -112,19 +120,25 @@ const $=id=>document.getElementById(id), v=id=>parseFloat($(id).value)||0;
 const f=n=>(n<0?'-':'')+'$'+Math.abs(Math.round(n)).toLocaleString('en-AU');
 const cls=n=>n>=0?'pos':'neg';
 const GST=1.1;
-const row=(l,n,t)=>`<tr${t==2?' class="hl"':t?' class="tot"':''}><td>${l}</td><td class="${cls(n)}">${f(n)}</td></tr>`;
+const cl=(t)=>t==2?' class="hl"':t?' class="tot"':'';
+const row=(l,n,t)=>`<tr${cl(t)}><td>${l}</td><td class="${cls(n)}">${f(n)}</td></tr>`;
+const rx=(l,a,b,t)=>`<tr${cl(t)}><td>${l}</td><td class="${cls(a)}">${f(a)}</td><td class="${cls(b)}">${f(b)}</td></tr>`;
+const KPIL='Total additional KPI achieved <span class="kp">(KPI to be set aside in provisions)</span>';
 function render(){
  $('bb').value=Math.round((v('sale')-v('gap'))*100)/100;
  const q=v('qty'),gap=(v('sale')-v('cost'))/GST,oem=v('oem'),kpi=v('kpi');
- const g1=gap+oem;
- const resEx=v('resale')/GST,bbEx=v('bb')/GST;
- const sell=v('sfix');
- const g2=resEx-bbEx-v('recon')-sell;
- const tot=g1+g2,dv=v('demo')-v('resale');
- $('var').textContent=f(dv);$('var').className='out '+cls(dv);
- $('s1').innerHTML='<tr><th>Per car</th><th>Amount <span class="gst">(ex GST)</span></th></tr>'+row('Margin on sale to Karmo/Fleet co.',gap)+row('Additional OEM support received',oem)+row('Gross per car',g1,2)+row(`Whole deal (${q} cars)`,g1*q,1)+row('Total additional KPI achieved',kpi)+row('Whole deal + KPI achieved',g1*q+kpi,1)+row('Whole deal + KPI not achieved',g1*q);
- $('s2').innerHTML='<tr><th>Per car</th><th>Amount <span class="gst">(ex GST)</span></th></tr>'+row('Assumed resale price <span class="gst">(ex GST)</span>',resEx)+row('Less: agreed buyback price <span class="gst">(ex GST)</span>',-bbEx)+row('Less: reconditioning',-v('recon'))+row('Less: selling costs',-sell)+row('Gross per car',g2,2)+row(`Whole deal (${q} cars)`,g2*q,1);
- $('s3').innerHTML='<tr><th></th><th>Amount <span class="gst">(ex GST)</span></th></tr>'+row('Gross per car: sales to Karmo/Fleet (section 1)',g1)+row('Gross per car: buyback and resale (section 2)',g2)+row('Total gross per car',tot,2)+row(`Whole deal (${q} cars)`,tot*q,1)+row('Total additional KPI achieved',kpi)+row('Whole deal + KPI achieved',tot*q+kpi,1)+row('Whole deal + KPI achieved (per car)',q?(tot*q+kpi)/q:0);
+ const g1=gap+oem,bbEx=v('bb')/GST,sell=v('sfix'),rec=v('recon');
+ const rB=v('resB')/GST,rW=v('resW')/GST;
+ const g2B=rB-bbEx-rec-sell,g2W=rW-bbEx-rec-sell;
+ const tB=g1+g2B,tW=g1+g2W;
+ const dB=v('demo')-v('resB'),dW=v('demo')-v('resW');
+ $('var').textContent=f(dB);$('var').className='out '+cls(dB);
+ $('var2').textContent=f(dW);$('var2').className='out '+cls(dW);
+ const H=`<tr><th>Per car</th><th>Best case <span class="gst">(ex GST)</span></th><th>Worst case <span class="gst">(ex GST)</span></th></tr>`;
+ const kb=x=>q?(x*q+kpi)/q:0;
+ $('s1').innerHTML='<tr><th>Per car</th><th>Amount <span class="gst">(ex GST)</span></th></tr>'+row('Margin on sale to Karmo/Fleet co.',gap)+row('Additional OEM support received',oem)+row('Gross per car',g1,2)+row(`Whole deal (${q} cars)`,g1*q,1)+row(KPIL,kpi)+row('Whole deal + KPI achieved',g1*q+kpi,1)+row('Whole deal + KPI not achieved',g1*q);
+ $('s2').innerHTML=H+rx('Assumed resale price <span class="gst">(ex GST)</span>',rB,rW)+rx('Less: agreed buyback price <span class="gst">(ex GST)</span>',-bbEx,-bbEx)+rx('Less: reconditioning',-rec,-rec)+rx('Less: selling costs',-sell,-sell)+rx('Gross per car',g2B,g2W,2)+rx(`Whole deal (${q} cars)`,g2B*q,g2W*q,1);
+ $('s3').innerHTML=H.replace('Per car','')+rx('Gross per car: sales to Karmo/Fleet (section 1)',g1,g1)+rx('Gross per car: buyback and resale (section 2)',g2B,g2W)+rx('Total gross per car',tB,tW,2)+rx(`Whole deal (${q} cars)`,tB*q,tW*q,1)+rx(KPIL,kpi,kpi)+rx('Whole deal + KPI achieved',tB*q+kpi,tW*q+kpi,1)+rx('Whole deal + KPI achieved (per car)',kb(tB),kb(tW));
 }
 document.querySelectorAll('input').forEach(i=>i.addEventListener('input',render));
 render();
