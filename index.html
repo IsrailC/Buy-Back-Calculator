@@ -91,10 +91,10 @@ small{color:var(--mute);display:block;margin-top:8px}
 <main>
 <section><h2>1. Sales to Karmo/Fleet company</h2><div class="g">
 <label><span class="t">Number of vehicles</span><input id="qty" type="number" value="20" min="1"></label>
-<label><span class="t">Dealer cost per car (Total vehicle cost including PD, Clean, Licence &amp; Rego) <span class="gst">(GST inclusive)</span></span><input id="cost" type="number" value="28000"></label>
 <label><span class="t"><strong>Sale price to Karmo/Fleet co. <span class="gst">(excl Stamp &amp; Rego)</span></strong><br>(To equal cost price or less unless otherwise approved) <span class="gst">(GST inclusive)</span></span><input id="sale" type="number" value="27000"></label>
 <label class="low"><span class="t">Stamp Duty &amp; Rego</span><input id="stamp" type="number" value="1000"></label>
 <label><span class="t">Sale price to Karmo/Fleet co. <span class="gst">(incl Stamp &amp; Rego)</span></span><input id="saleInc" type="number" value="28000" readonly tabindex="-1"></label>
+<label><span class="t">Dealer cost per car (Total vehicle cost including PD, Clean, Licence &amp; Rego) <span class="gst">(GST inclusive)</span></span><input id="cost" type="number" value="28000" readonly tabindex="-1"></label>
 <label><span class="t">Buyback Gap <span class="gst">(GST inclusive)</span></span><input id="gap" type="number" value="3500"></label>
 <label><span class="t">Additional OEM support received per car <span class="gst">(GST exclusive)</span></span><input id="oem" type="number" value="0"></label>
 <label><span class="t">Total additional KPI achieved by doing the deal (eg. Month Target) <span class="gst">(GST exclusive)</span></span><input id="kpi" type="number" value="65000"></label>
@@ -132,10 +132,11 @@ const rx=(l,a,b,t)=>`<tr${cl(t)}><td>${l}</td><td class="${cls(a)}">${f(a)}</td>
 const KPIL='Total additional KPI achieved <span class="kp">(Banked upfront + kept in provisions)</span>';
 function render(){
  $('saleInc').value=v('sale')+v('stamp');
+ $('cost').value=v('sale')+v('stamp');
  $('bb').value=Math.round((v('saleInc')-v('gap'))*100)/100;
  $('prov').value=v('kpi')-v('banked');
  const bank=v('banked'),pv=v('kpi')-v('banked');
- const q=v('qty'),gap=(v('sale')-v('cost'))/GST,oem=v('oem'),kpi=v('kpi');
+ const q=v('qty'),gap=(v('saleInc')-v('cost'))/GST,oem=v('oem'),kpi=v('kpi');
  const g1=gap+oem,bbEx=v('bb')/GST,sell=v('sfix'),rec=v('recon');
  const rB=v('resB')/GST,rW=v('resW')/GST;
  const g2B=rB-bbEx-rec-sell,g2W=rW-bbEx-rec-sell;
