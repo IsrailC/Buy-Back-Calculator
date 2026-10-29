@@ -97,7 +97,7 @@ small{color:var(--mute);display:block;margin-top:8px}
 <label><span class="t"><strong>Sale price to Karmo/Fleet co. <span class="gst">(excl Stamp &amp; Rego)</span></strong><br>(To equal cost price or less unless otherwise approved) <span class="gst">(GST inclusive)</span></span><input id="sale" type="number" value="27000"></label>
 <label class="low"><span class="t">Stamp Duty &amp; Rego</span><input id="stamp" type="number" value="1000"></label>
 <label><span class="t">Sale price to Karmo/Fleet co. <span class="gst">(incl Stamp &amp; Rego)</span></span><input id="saleInc" type="number" value="28000" readonly tabindex="-1"></label>
-<label><span class="t">Dealer cost per car (Total vehicle cost including PD, Clean, Licence &amp; Rego) <span class="gst">(GST inclusive)</span></span><input id="cost" type="number" value="28000" readonly tabindex="-1"></label>
+<label><span class="t">Dealer cost per car (Total vehicle cost including PD, Clean, Licence &amp; Rego) <span class="gst">(GST inclusive)</span></span><input id="cost" type="number" value="28000"></label>
 <label><span class="t">Buyback Gap <span class="gst">(GST inclusive)</span></span><input id="gap" type="number" value="3500"></label>
 <label><span class="t">Total additional KPI achieved by doing the deal (eg. Month Target) <span class="gst">(GST exclusive)</span></span><input id="kpi" type="number" value="65000"></label>
 <label><span class="t">Additional KPI banked upfront</span><input id="banked" type="number" value="25000"></label>
@@ -128,7 +128,6 @@ const rx=(l,a,b,t)=>`<tr${cl(t)}><td>${l}</td><td class="${cls(a)}">${f(a)}</td>
 const KPIL='Total additional KPI achieved <span class="kp">(Banked upfront + kept in provisions)</span>';
 function render(){
  $('saleInc').value=v('sale')+v('stamp');
- $('cost').value=v('sale')+v('stamp');
  $('bb').value=Math.round((v('saleInc')-v('gap'))*100)/100;
  $('prov').value=v('kpi')-v('banked');
  const bank=v('banked'),pv=v('kpi')-v('banked');
@@ -139,8 +138,8 @@ function render(){
  const tB=g1+g2B,tW=g1+g2W;
  const H=`<tr><th>Per car</th><th>Best case <span class="gst">(ex GST)</span></th><th>Worst case <span class="gst">(ex GST)</span></th></tr>`;
  const kb=x=>q?(x*q+kpi)/q:0;
- $('s1').innerHTML='<tr><th></th><th>Amount <span class="gst">(ex GST)</span></th></tr>'+row('Additional KPI banked upfront',bank);
- $('s2').innerHTML=H+rx('Assumed resale price <span class="gst">(ex GST)</span>',rB,rW)+rx('Less: agreed buyback price <span class="gst">(ex GST)</span>',-bbEx,-bbEx)+rx('Less: reconditioning',-rec,-rec)+rx('Less: selling costs',-sell,-sell)+rx('Gross per car',g2B,g2W,2)+rx(`Whole deal (${q} cars)`,g2B*q,g2W*q,1)+rx('Total additional KPI kept in provisions',pv,pv)+rx('Whole deal + KPI achieved',g2B*q+pv,g2W*q+pv,1)+rx('Whole deal + KPI not achieved',g2B*q,g2W*q);
+ $('s1').innerHTML='<tr><th>Per car</th><th>Amount <span class="gst">(ex GST)</span></th></tr>'+row('Gross per car',g1,2)+row(`Whole deal (${q} cars)`,g1*q,1)+row('Additional KPI banked upfront',bank)+row('Whole deal + KPI banked upfront',g1*q+bank,1);
+ $('s2').innerHTML=H+rx('Assumed resale price <span class="gst">(ex GST)</span>',rB,rW)+rx('Less: agreed buyback price <span class="gst">(ex GST)</span>',-bbEx,-bbEx)+rx('Less: reconditioning',-rec,-rec)+rx('Less: selling costs',-sell,-sell)+rx('Gross per car',g2B,g2W,2)+rx(`Whole deal (${q} cars)`,g2B*q,g2W*q,1)+rx('Total additional KPI kept in provisions',pv,pv)+rx('Whole deal + KPI kept in provisions',g2B*q+pv,g2W*q+pv,1);
  $('s3').innerHTML=H.replace('Per car','')+rx('Gross per car: sales to Karmo/Fleet (section 1)',g1,g1)+rx('Gross per car: buyback and resale (section 2)',g2B,g2W)+rx('Total gross per car',tB,tW,2)+rx(`Whole deal (${q} cars)`,tB*q,tW*q,1)+rx(KPIL,kpi,kpi)+rx('Whole deal + KPI achieved',tB*q+kpi,tW*q+kpi,1)+rx('Whole deal + KPI achieved (per car)',kb(tB),kb(tW));
 }
 document.querySelectorAll('input').forEach(i=>i.addEventListener('input',render));
