@@ -49,6 +49,8 @@ label input,label .out{margin-top:auto;height:38px}
 label.low{justify-content:flex-end}
 label.low input{margin-top:0}
 .kp{display:inline-block}
+@media(min-width:861px){main>section.res:last-child{grid-column:2}}
+.cap main>section.res:last-child{grid-column:2}
 label .t strong{color:var(--ink);font-weight:700}
 label .t{display:block}
 .gh{grid-column:1/-1;font-size:12px;font-weight:700;color:var(--ink);margin-top:6px}
@@ -74,6 +76,7 @@ body{font-size:11px;zoom:.7;background:#fff}
 .pdate{display:block;color:var(--mute);font-size:11px;margin-top:4px}
 header{padding:0 0 6px}h1{font-size:26px}
 main{grid-template-columns:1fr 1fr!important;gap:10px;padding:6px 0 0}
+main>section.res:last-child{grid-column:2}
 main>section{order:0!important}
 section,.res{padding:10px 12px;break-inside:avoid}
 h2{font-size:16px;margin-bottom:6px}
@@ -96,7 +99,6 @@ small{color:var(--mute);display:block;margin-top:8px}
 <label><span class="t">Sale price to Karmo/Fleet co. <span class="gst">(incl Stamp &amp; Rego)</span></span><input id="saleInc" type="number" value="28000" readonly tabindex="-1"></label>
 <label><span class="t">Dealer cost per car (Total vehicle cost including PD, Clean, Licence &amp; Rego) <span class="gst">(GST inclusive)</span></span><input id="cost" type="number" value="28000" readonly tabindex="-1"></label>
 <label><span class="t">Buyback Gap <span class="gst">(GST inclusive)</span></span><input id="gap" type="number" value="3500"></label>
-<label><span class="t">Additional OEM support received per car <span class="gst">(GST exclusive)</span></span><input id="oem" type="number" value="0"></label>
 <label><span class="t">Total additional KPI achieved by doing the deal (eg. Month Target) <span class="gst">(GST exclusive)</span></span><input id="kpi" type="number" value="65000"></label>
 <label><span class="t">Additional KPI banked upfront</span><input id="banked" type="number" value="25000"></label>
 <label><span class="t">Additional KPI kept in provisions</span><input id="prov" type="number" value="40000" readonly tabindex="-1"></label>
@@ -113,12 +115,6 @@ small{color:var(--mute);display:block;margin-top:8px}
 </div>
 </section>
 <section class="res"><h2>Potential gross on buyback</h2><table id="s2"></table></section>
-<section><h2>Demo Price comparison</h2><div class="g">
-<label><span class="t">Demo price <span class="gst">(GST inclusive)</span></span><input id="demo" type="number" value="28000"></label>
-<div></div>
-<label><span class="t">Demo variance - best case <span class="gst">(GST inclusive)</span><br>(demo price minus best case resale price)</span><output id="var" class="out"></output></label>
-<label><span class="t">Demo variance - worst case <span class="gst">(GST inclusive)</span><br>(demo price minus worst case resale price)</span><output id="var2" class="out"></output></label>
-</div></section>
 <section class="res"><h2>Total potential gross <span class="gst">(section 1 and 2 combined)</span></h2><table id="s3"></table></section>
 </main>
 <script>
@@ -136,17 +132,14 @@ function render(){
  $('bb').value=Math.round((v('saleInc')-v('gap'))*100)/100;
  $('prov').value=v('kpi')-v('banked');
  const bank=v('banked'),pv=v('kpi')-v('banked');
- const q=v('qty'),gap=(v('saleInc')-v('cost'))/GST,oem=v('oem'),kpi=v('kpi');
- const g1=gap+oem,bbEx=v('bb')/GST,sell=v('sfix'),rec=v('recon');
+ const q=v('qty'),gap=(v('saleInc')-v('cost'))/GST,kpi=v('kpi');
+ const g1=gap,bbEx=v('bb')/GST,sell=v('sfix'),rec=v('recon');
  const rB=v('resB')/GST,rW=v('resW')/GST;
  const g2B=rB-bbEx-rec-sell,g2W=rW-bbEx-rec-sell;
  const tB=g1+g2B,tW=g1+g2W;
- const dB=v('demo')-v('resB'),dW=v('demo')-v('resW');
- $('var').textContent=f(dB);$('var').className='out '+cls(dB);
- $('var2').textContent=f(dW);$('var2').className='out '+cls(dW);
  const H=`<tr><th>Per car</th><th>Best case <span class="gst">(ex GST)</span></th><th>Worst case <span class="gst">(ex GST)</span></th></tr>`;
  const kb=x=>q?(x*q+kpi)/q:0;
- $('s1').innerHTML='<tr><th>Per car</th><th>Amount <span class="gst">(ex GST)</span></th></tr>'+row('Margin on sale to Karmo/Fleet co.',gap)+row('Additional OEM support received',oem)+row('Gross per car',g1,2)+row(`Whole deal (${q} cars)`,g1*q,1)+row('Additional KPI banked upfront',bank)+row('Whole deal + KPI achieved',g1*q+bank,1)+row('Whole deal + KPI not achieved',g1*q);
+ $('s1').innerHTML='<tr><th></th><th>Amount <span class="gst">(ex GST)</span></th></tr>'+row('Additional KPI banked upfront',bank);
  $('s2').innerHTML=H+rx('Assumed resale price <span class="gst">(ex GST)</span>',rB,rW)+rx('Less: agreed buyback price <span class="gst">(ex GST)</span>',-bbEx,-bbEx)+rx('Less: reconditioning',-rec,-rec)+rx('Less: selling costs',-sell,-sell)+rx('Gross per car',g2B,g2W,2)+rx(`Whole deal (${q} cars)`,g2B*q,g2W*q,1)+rx('Total additional KPI kept in provisions',pv,pv)+rx('Whole deal + KPI achieved',g2B*q+pv,g2W*q+pv,1)+rx('Whole deal + KPI not achieved',g2B*q,g2W*q);
  $('s3').innerHTML=H.replace('Per car','')+rx('Gross per car: sales to Karmo/Fleet (section 1)',g1,g1)+rx('Gross per car: buyback and resale (section 2)',g2B,g2W)+rx('Total gross per car',tB,tW,2)+rx(`Whole deal (${q} cars)`,tB*q,tW*q,1)+rx(KPIL,kpi,kpi)+rx('Whole deal + KPI achieved',tB*q+kpi,tW*q+kpi,1)+rx('Whole deal + KPI achieved (per car)',kb(tB),kb(tW));
 }
